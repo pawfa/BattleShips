@@ -11,8 +11,7 @@ for (let i = 0; i < 10; i++){
 
 
 let boardService = function(data){
-        console.log(board);
-        return [0,0];
+        return board;
 };
 
 module.exports = boardService;

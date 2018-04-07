@@ -10,7 +10,9 @@ socket.on('news', () => {
 function sendBoard() {
     socket.emit('my other event');
 
-
     // socket.emit('subscribeToTimer', 1000);
 }
-export { sendBoard }
+function getSocket(){
+    return socket;
+}
+export { sendBoard, getSocket }

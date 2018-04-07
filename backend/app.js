@@ -16,7 +16,8 @@ server.listen(3003);
 io.on('connection', function (socket) {
     socket.emit('news', { hello: 'world' });
     socket.on('my other event', function (data) {
-        io.sockets.emit(boardService(data));
+        io.sockets.emit('board',{
+            msg:boardService(data)});
     });
     socket.on('test', function (data) {
         console.log(data.msg);
