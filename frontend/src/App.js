@@ -1,38 +1,62 @@
-import React, { Component } from 'react';
+import React, {Component} from 'react';
 import logo from './logo.svg';
 import './App.css';
-import { sendBoard, getSocket } from './api';
+import {sendShipCoord, getSocket, sendShotCoord} from './api';
 import Granim from 'granim';
+import {Button, Row} from 'react-materialize';
+
+import OpponentBoard from "./components/OpponentBoard/OpponentBoard";
+import PlayerBoard from "./components/PlayerBoard/PlayerBoard";
 
 class App extends Component {
     socket;
-    board = [];
     boardtwo = [
         "pierwszy",
         "drugi",
         "trzeci"
-    ].map((div, i)=>{return <div key={i}>{div}</div>});
+    ].map((div, i) => {
+        return <div key={i}>{div}</div>
+    });
+    state = {
+        myBoard: [],
+        opponentBoard: []
+    };
 
-    constructor(){
+    constructor() {
         super();
-        // sendBoard();
-        this.state = {board: []};
-        this.state = []
+        this.putShip = this.putShip.bind(this);
+
         this.socket = getSocket();
-        this.socket.on('board', (data)=>{
-            // this.board = data.msg;
-            for (let i = 0; i < 10; i++) {
-                this.board.push(<span className='board' key={i}>data.msg[i]</span>);
-            }
-            this.state.board = this.board;
-            console.log(this.state.board);
+        this.socket.on('emptyBoard', (data) => {
+            console.log(data.emptyBoard);
+            this.setState({
+                myBoard: data.emptyBoard,
+                opponentBoard: data.emptyBoard
+            });
+        });
+        this.socket.on('opponentBoard', (data) => {
+            const tmpBoard = this.state.opponentBoard;
+            tmpBoard[data.msg[0]][data.msg[1]] = data.msg[2];
+            this.setState({
+                opponentBoard: tmpBoard
+            });
+        });
+        this.socket.on('putShip', (data) => {
+            this.setState({
+                myBoard: data.msg
+            });
+        });
+        this.socket.on('opponentDisconnected', () => {
+            console.log("disconnected opponent");
+            this.socket.disconnect();
+            alert('Opponent disconnected');
         });
 
         let granimInstance = new Granim({
             element: '#granim-canvas',
             name: 'granim',
             opacity: [1, 1],
-            states : {
+            states: {
                 "default-state": {
                     gradients: [
                         ['#834D9B', '#D04ED6'],
@@ -43,28 +67,30 @@ class App extends Component {
         });
     }
 
-    shot(){
-        console.log("elton");
-        sendBoard();
+    shot = (event) => {
+        sendShotCoord(event);
+    };
+
+    putShip(event) {
+        console.log(event);
+        sendShipCoord(event);
     }
 
-
-  render() {
-    console.log(this.board);
-    return (
-      <div className="App">
-        <header className="App-header">
-          <img src={logo} className="App-logo" alt="logo" />
-          <h1 className="App-title">Welcome to React</h1>
-        </header>
-        <p className="App-intro">
-          To get started, edit <code>src/App.js</code> and save to reload.
-        </p>
-          <button className="uk-button uk-button-default" onClick={this.shot}>Shot!</button>
-          {this.boardtwo}
-      </div>
-    );
-  }
+    render() {
+        return (
+            <div className="App">
+                <header className="App-header">
+                    <img src={logo} className="App-logo" alt="logo"/>
+                    <h1 className="App-title">Welcome to React</h1>
+                </header>
+                <Button waves='light' onClick={this.shot}>Shot!</Button>
+                <Row className="main">
+                    <OpponentBoard board={this.state.opponentBoard} shot={this.shot}/>
+                    <PlayerBoard board={this.state.myBoard} putShip={this.putShip}/>
+                </Row>
+            </div>
+        );
+    }
 }
 
 export default App;

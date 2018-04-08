@@ -1,0 +1,13 @@
+.cell{
+    width: 30px;
+    height: 30px;
+    border: 1px solid lightgray;
+    cursor: pointer;
+}
+.hit{
+    /*border: 1px solid red;*/
+    background-color: red;
+}
+.miss{
+    background-color: gray;
+}

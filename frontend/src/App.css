@@ -37,3 +37,12 @@
   left: 0;
   z-index: -10;
 }
+
+.container{
+  margin: 0 auto;
+}
+.boardRow{
+  margin: 0 auto;
+  display: inline-block;
+
+}

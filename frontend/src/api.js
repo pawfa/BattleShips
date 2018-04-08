@@ -1,18 +1,14 @@
 import openSocket from 'socket.io-client';
 const socket = openSocket('http://localhost:3003');
-socket.on('news', () => {
-    socket.emit('test',{
-        msg: 'Testowa'
-    });
-    console.log("dziala")
-});
 
-function sendBoard() {
-    socket.emit('my other event');
+function sendShipCoord(coord){
+    socket.emit('shipCoord',coord)
+}
 
-    // socket.emit('subscribeToTimer', 1000);
+function sendShotCoord(shotCoord){
+    socket.emit('shotCoord',shotCoord);
 }
 function getSocket(){
     return socket;
 }
-export { sendBoard, getSocket }
+export { getSocket, sendShotCoord, sendShipCoord }
