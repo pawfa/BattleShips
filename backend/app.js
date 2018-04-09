@@ -8,8 +8,8 @@ let shot = require('./service/board.service').shot;
 let putShip = require('./service/board.service').putShip;
 let endConnection = require('./service/board.service').endConnection;
 
-let indexRouter = require('./routes/index');
-let usersRouter = require('./routes/users');
+// let indexRouter = require('./routes/index');
+// let usersRouter = require('./routes/users');
 let connectToRoom = require('./service/board.service').connectToRoom;
 
 let app = express();
@@ -22,11 +22,11 @@ io.on('connection', function (socket) {
     connectToRoom(socket);
 
     socket.emit('emptyBoard', {
-        emptyBoard: getEmptyBoard()
+        emptyPlayerBoard: getEmptyBoard(),
+        emptyOpponentBoard: getEmptyBoard()
     });
 
     socket.on('shotCoord', function (data) {
-        console.log(socket.rooms);
         socket.emit('opponentBoard', {
             msg: shot(data, socket.rooms)
         });

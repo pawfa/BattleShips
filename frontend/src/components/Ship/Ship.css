@@ -1,0 +1,6 @@
+.ship{
+    display: flex;
+    flex-direction: column;
+    flex-wrap: nowrap;
+    border: 2px solid black;
+}

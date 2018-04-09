@@ -33,9 +33,9 @@ let shot = function (shotCoord, socketRoom) {
     let y = Math.floor(shotCoord / 10 % 10);
     let elementPos = rooms.map(function(x) {console.log(x.roomNumber);return x.roomNumber; }).indexOf(roomNumber);
     if(rooms[elementPos].playerId === socketId){
-        return opponentBoard[y][x] !== 1 ? [y,x,2] : [y,x, 3] ;
+        return rooms[elementPos].opponentBoard[y][x] !== 1 ? [y,x,2] : [y,x,3];
     }else{
-        return playerBoard[y][x] !== 1 ? [y,x,2] : [y,x, 3];
+        return rooms[elementPos].playerBoard[y][x] !== 1 ? [y,x,2] : [y,x,3];
     }
 };
 
@@ -44,13 +44,14 @@ let putShip = function(coord,socketRoom){
     let socketId = Object.keys(socketRoom)[1];
     let x = Math.floor(coord % 10);
     let y = Math.floor(coord / 10 % 10);
+
     let elementPos = rooms.map(function(x) {console.log(x.roomNumber);return x.roomNumber; }).indexOf(roomNumber);
     if(rooms[elementPos].playerId === socketId){
-        playerBoard[y][x] = 1;
-        return playerBoard;
+        rooms[elementPos].playerBoard[y][x] = 1;
+        return rooms[elementPos].playerBoard;
     }else{
-        opponentBoard[y][x] = 1;
-        return opponentBoard;
+        rooms[elementPos].opponentBoard[y][x] = 1;
+        return rooms[elementPos].opponentBoard;
     }
 
 };
@@ -66,6 +67,7 @@ let opponentOnline = function (roomNumber) {
 
 };
 let connectToRoom = function (socket) {
+
     if (numberOfClients % 2 === 0) {
         rooms.push({
             roomNumber: roomNumber++,
@@ -75,7 +77,8 @@ let connectToRoom = function (socket) {
         createGame(rooms.length - 1);
     }
     numberOfClients++;
-
+    console.log("clients number "+numberOfClients);
+    console.log("rooms length " +rooms.length);
     let currentRoom = rooms[rooms.length - 1];
     if (currentRoom.playerId !== socket.id) {
         currentRoom.opponentId = socket.id;
@@ -86,11 +89,14 @@ let connectToRoom = function (socket) {
 };
 
 let endConnection = function(socketRoom){
-    rooms = rooms.filter(( e ) => {
-        return e.roomNumber != socketRoom;
-    });
-    console.log(rooms);
+    if(numberOfClients > 0){
+        numberOfClients % 2 === 0 ? numberOfClients -=2 : numberOfClients--;
+    }
 
+    console.log("clients number afetr dec"+numberOfClients);
+    rooms = rooms.filter(( e ) => {
+        return e.roomNumber !== Number(socketRoom);
+    });
 };
 
 module.exports = {
