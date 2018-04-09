@@ -1,5 +1,4 @@
 import React, { Component } from 'react';
-import {Col} from 'react-materialize';
 import './Cell.css';
 import PropTypes from 'prop-types';
 import {ItemTypes} from "../../Constants";
@@ -8,7 +7,8 @@ import { moveShip } from '../../Game';
 
 const cellTarget = {
     drop(props, monitor) {
-        moveShip(props.x, props.y);
+        console.log(monitor.getItemType());
+        moveShip(props.x, props.y, 'shortShip');
     }
 };
 
@@ -28,9 +28,9 @@ class Cell extends Component {
         // if (value === 3) btnClass += ' hit';
         // else if (value === 2) btnClass += ' miss';
         // return <div>{this.props.children}<Col className={btnClass} onClick={this.props.cellClick}>{value}</Col></div>;
-        return connectDropTarget(<div><Col className='cell'>
+        return connectDropTarget(<div className='cell'>
             {this.props.children}
-            </Col></div>);
+            </div>);
     }
 
 }

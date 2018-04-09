@@ -1,40 +1,33 @@
 import React, {Component} from 'react';
-import logo from './logo.svg';
 import './App.css';
 import {sendShipCoord, getSocket, sendShotCoord} from './api';
 import Granim from 'granim';
-import {Button, Row} from 'react-materialize';
+import {Col, Row} from 'react-materialize';
 import OpponentBoard from "./components/OpponentBoard/OpponentBoard";
 import PlayerBoard from "./components/PlayerBoard/PlayerBoard";
-import HTML5Backend from 'react-dnd-html5-backend';
-import { DragDropContext } from 'react-dnd';
 import {observe} from "./Game";
 
 class App extends Component {
+
     socket;
-    boardtwo = [
-        "pierwszy",
-        "drugi",
-        "trzeci"
-    ].map((div, i) => {
-        return <div key={i}>{div}</div>
-    });
-    state = {
-        myBoard: [],
-        opponentBoard: [],
-        shipPosition: []
-    };
+
     constructor(props) {
         super(props);
-        this.unobserve = observe(this.handleChange.bind(this))
+        this.state = {
+            myBoard: [],
+            opponentBoard: []
+        };
+        this.unobserve = observe(this.handleChange.bind(this));
     }
 
-    handleChange(shipPosition) {
-        const nextState = { shipPosition };
-        if (this.state) {
-            this.setState(nextState)
+    handleChange(shipsPosition) {
+        const nextState = this.state;
+        nextState.shipsPosition = shipsPosition;
+        if (this.state.shipsPosition) {
+            console.log(nextState);
+            this.setState(nextState);
         } else {
-            this.state = nextState
+            this.state.push({shipsPosition: nextState})
         }
     }
 
@@ -42,7 +35,7 @@ class App extends Component {
         this.unobserve()
     }
 
-    componentDidMount(){
+    componentDidMount() {
         this.putShip = this.putShip.bind(this);
 
         this.socket = getSocket();
@@ -61,35 +54,33 @@ class App extends Component {
             }
         });
 
-        this.socket.on('emptyBoard', (data) => {
-            console.log(data);
-            this.setState({
-                myBoard: data.emptyPlayerBoard,
-                opponentBoard: data.emptyOpponentBoard
-            });
-            console.log(this.state.myBoard);
-        });
-/*
-        this.socket.on('opponentBoard', (data) => {
-            const tmpBoard = this.state.opponentBoard;
-            tmpBoard[data.msg[0]][data.msg[1]] = data.msg[2];
-            this.setState({
-                opponentBoard: tmpBoard
-            });
-        });
+                this.socket.on('emptyBoard', (data) => {
+                    this.setState({
+                        myBoard: data.emptyPlayerBoard,
+                        opponentBoard: data.emptyOpponentBoard
+                    });
+                });
+        /*
+                                this.socket.on('opponentBoard', (data) => {
+                                    const tmpBoard = this.state.opponentBoard;
+                                    tmpBoard[data.msg[0]][data.msg[1]] = data.msg[2];
+                                    this.setState({
+                                        opponentBoard: tmpBoard
+                                    });
+                                });
 
-        this.socket.on('putShip', (data) => {
-            console.log(data.msg);
-            this.setState({
-                myBoard: data.msg
-            });
-        });
-        this.socket.on('opponentDisconnected', () => {
-            console.log("disconnected opponent");
-            this.socket.disconnect();
-            alert('Opponent disconnected');
-        });
-*/
+                                this.socket.on('putShip', (data) => {
+                                    console.log(data.msg);
+                                    this.setState({
+                                        myBoard: data.msg
+                                    });
+                                });
+                                this.socket.on('opponentDisconnected', () => {
+                                    console.log("disconnected opponent");
+                                    this.socket.disconnect();
+                                    alert('Opponent disconnected');
+                                });
+                        */
     }
 
     shot = (event) => {
@@ -101,19 +92,18 @@ class App extends Component {
     }
 
     render() {
-        const { shipPosition } = this.state;
-        console.log(this.state.shipPosition);
+        const {shipsPosition} = this.state;
+        console.log(this.state);
         return (
             <div className="App">
-                {/*<header className="App-header">*/}
-                    {/*<img src={logo} className="App-logo" alt="logo"/>*/}
-                    {/*<h1 className="App-title">Welcome to React</h1>*/}
-                {/*</header>*/}
-                {/*<Button waves='light' onClick={this.shot}>Shot!</Button>*/}
-                <Row className="main">
-                    <OpponentBoard board={this.state.opponentBoard} shot={this.shot}/>
-                    {/*<PlayerBoard shipPosition={shipPosition} board={this.state.myBoard} putShip={this.putShip}/>*/}
-                    <PlayerBoard shipPosition={shipPosition}/>
+                <Row className="mainRow">
+                    <Col className='mainCol l6'>
+                        <OpponentBoard board={this.state.opponentBoard} shot={this.shot}/>
+                    </Col>
+                    {/*<PlayerBoard shipPosition={shipPosition} />*/}
+                    <Col className='mainCol l6'>
+                        <PlayerBoard shipsPosition={shipsPosition} board={this.state.myBoard} putShip={this.putShip}/>
+                    </Col>
                 </Row>
 
             </div>
@@ -122,6 +112,6 @@ class App extends Component {
 
 
 }
-// export default App;
-export default DragDropContext(HTML5Backend)(App);
+
+export default App;
 

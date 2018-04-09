@@ -1,24 +1,28 @@
 import React, {Component} from "react";
-import {Col, Row} from 'react-materialize';
 import Cell from "../../components/Cell/Cell";
 import { DragDropContext } from 'react-dnd';
 import HTML5Backend from 'react-dnd-html5-backend';
 import Ship from "../Ship/Ship";
 import PropTypes from 'prop-types';
 import './PlayerBoard.css';
+import Dock from "../../Dock/Dock";
+
+
 
 class PlayerBoard extends Component {
     static propTypes = {
-        shipPosition: PropTypes.arrayOf(PropTypes.number.isRequired).isRequired,
+        shipsPosition: PropTypes.object
+    };
+
+    collect = (shipData) => {
+            console.log(shipData)
     };
 
     renderCell(i) {
         const x = i % 8;
-        console.log(x);
         const y = Math.floor(i / 8);
-        console.log(y);
         return (
-            <div key={i} style={{ width: '12.5%', height: '12.5%' }}>
+            <div key={i} className='playerBoardCell'>
                 <Cell x={x} y={y}>
                     {this.renderPiece(x, y)}
                 </Cell>
@@ -27,19 +31,21 @@ class PlayerBoard extends Component {
     }
 
     renderPiece(x, y) {
-        const [knightX, knightY] = this.props.shipPosition;
-        const isKnightHere = x === knightX && y === knightY;
+        const [knightX, knightY] = this.props.shipsPosition.shortShip;
+        const isKnightHere = (x === knightX && y === knightY) ||(x === knightX+1 && y === knightY);
         return isKnightHere ? <Ship /> : null
     }
 
     render() {
 
-        const squares = [];
-        for (let i = 0; i < 64; i ++) {
-            console.log(i);
-            squares.push(this.renderCell(i))
+        const cells = [];
+        for (let i = 0; i < 100; i ++) {
+            cells.push(this.renderCell(i))
         }
-        return <div className="Board">{squares}</div>
+        return <div className={'playerBoard'}>
+            {cells}
+            {/*<Dock dragging={this.collect}/>*/}
+        </div>
         // const cells = [];
         // for (let i = 0; i < 64; i++) {
         //     cells.push(this.renderCell(i));

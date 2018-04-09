@@ -1,6 +1,14 @@
-.Board {
-    width: 100%;
-    height: 100%;
+
+.playerBoardCell{
+    border: 1px solid yellow;
+    width: 10%;
+    height: 10%;
+
+}
+.playerBoard{
+    width: 60%;
+    height: 60%;
     display: flex;
     flex-wrap: wrap;
+    text-align: center;
 }
