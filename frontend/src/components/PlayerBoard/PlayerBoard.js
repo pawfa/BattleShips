@@ -5,25 +5,37 @@ import HTML5Backend from 'react-dnd-html5-backend';
 import Ship from "../Ship/Ship";
 import PropTypes from 'prop-types';
 import './PlayerBoard.css';
-import Dock from "../../Dock/Dock";
-
+import {Button} from "react-materialize";
+import { shipsAreReady } from '../../Game';
 
 
 class PlayerBoard extends Component {
+    blockedDragging = false;
     static propTypes = {
         shipsPosition: PropTypes.object
     };
 
-    collect = (shipData) => {
-            console.log(shipData)
+    constructor(props){
+        super(props);
+        this.state = {
+            blockedDragging: false
+        }
+    }
+
+    startGame = () => {
+        this.setState({
+                blockedDragging: true
+            }
+        );
+        shipsAreReady();
     };
 
     renderCell(i) {
-        const x = i % 8;
-        const y = Math.floor(i / 8);
+        const x = i % 10;
+        const y = Math.floor(i / 10);
         return (
             <div key={i} className='playerBoardCell'>
-                <Cell x={x} y={y}>
+                <Cell x={x} y={y} >
                     {this.renderPiece(x, y)}
                 </Cell>
             </div>
@@ -31,9 +43,32 @@ class PlayerBoard extends Component {
     }
 
     renderPiece(x, y) {
-        const [knightX, knightY] = this.props.shipsPosition.shortShip;
-        const isKnightHere = (x === knightX && y === knightY) ||(x === knightX+1 && y === knightY);
-        return isKnightHere ? <Ship /> : null
+
+        const {shipsPosition} = this.props;
+        const shipName = function(x,y){
+            for (const key of Object.keys(shipsPosition)) {
+                let index = shipsPosition[key].findIndex((e)=> e[0]===x && e[1] === y);
+                if(index !== -1){
+                    return [key, index];
+                }
+            }
+            return '';
+        };
+
+        let shipData = shipName(x,y);
+        let shipType = shipData[0];
+        let shipPart = shipData[1];
+        switch (shipType) {
+            case 'cruiser':
+                return <Ship shipLength={2} shipPart={shipPart} blockedDragging={this.state.blockedDragging}/>;
+            case 'destroyer':
+                return <Ship shipLength={3} shipPart={shipPart} blockedDragging={this.state.blockedDragging}/>;
+            case 'battleship':
+                return <Ship shipLength={4} shipPart={shipPart} blockedDragging={this.state.blockedDragging}/>;
+            case 'aircraftCarrier':
+                return <Ship shipLength={5} shipPart={shipPart} blockedDragging={this.state.blockedDragging}/>;
+        }
+        return null;
     }
 
     render() {
@@ -42,9 +77,10 @@ class PlayerBoard extends Component {
         for (let i = 0; i < 100; i ++) {
             cells.push(this.renderCell(i))
         }
-        return <div className={'playerBoard'}>
+        return <div><div className={'playerBoard'}>
             {cells}
-            {/*<Dock dragging={this.collect}/>*/}
+        </div>
+            <Button onClick={this.startGame}> Start</Button>
         </div>
         // const cells = [];
         // for (let i = 0; i < 64; i++) {

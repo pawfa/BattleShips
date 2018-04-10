@@ -3,12 +3,12 @@ import './Cell.css';
 import PropTypes from 'prop-types';
 import {ItemTypes} from "../../Constants";
 import { DropTarget } from 'react-dnd';
-import { moveShip } from '../../Game';
+import { moveShip, sendShotCoord } from '../../Game';
 
 const cellTarget = {
     drop(props, monitor) {
-        console.log(monitor.getItemType());
-        moveShip(props.x, props.y, 'shortShip');
+        const item = monitor.getItem();
+        moveShip([props.x, props.y],item.shipLength, item.shipPart);
     }
 };
 
@@ -20,22 +20,15 @@ function collect(connect, monitor) {
 }
 
 class Cell extends Component {
-
     render() {
         const { x, y, connectDropTarget, isOver } = this.props;
-        // const { value } = this.props;
-        // let btnClass = 'cell';
-        // if (value === 3) btnClass += ' hit';
-        // else if (value === 2) btnClass += ' miss';
-        // return <div>{this.props.children}<Col className={btnClass} onClick={this.props.cellClick}>{value}</Col></div>;
-        return connectDropTarget(<div className='cell'>
+        return connectDropTarget(<div className='cell' onClick={()=>{sendShotCoord([x,y])}}>
             {this.props.children}
             </div>);
     }
 
 }
 Cell.propTypes = {
-    // value: PropTypes.number,
     x: PropTypes.number.isRequired,
     y: PropTypes.number.isRequired,
     connectDropTarget: PropTypes.func.isRequired,

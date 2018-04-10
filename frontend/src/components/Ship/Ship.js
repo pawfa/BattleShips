@@ -7,7 +7,14 @@ import PropTypes from 'prop-types';
 
 const shipSource = {
     beginDrag(props) {
-        return {};
+        const { shipLength } = props;
+        const { shipPart } = props;
+        return {shipLength, shipPart};
+    },
+
+    canDrag(props) {
+        // You can disallow drag based on props
+        return !props.blockedDragging;
     }
 };
 
@@ -18,22 +25,29 @@ function collect(connect, monitor) {
     }
 }
 
+
+
 class Ship extends Component {
 
     render() {
         const { connectDragSource, isDragging } = this.props;
-
+        const {shipLength} = this.props;
+        const {shipPart} = this.props;
+        // shipSource.canDrag(this.props);
         return connectDragSource(<div style={{
             fontSize: 25,
             fontWeight: 'bold',
-            cursor: 'move'
-        }}>
+            cursor: this.props.blockedDragging? 'pointer':'move'
+        }} >
             ♘
         </div>);
     }
 }
 Ship.propTypes = {
     connectDragSource: PropTypes.func.isRequired,
-    isDragging: PropTypes.bool.isRequired
+    isDragging: PropTypes.bool.isRequired,
+    shipLength: PropTypes.number.isRequired,
+    shipPart: PropTypes.number.isRequired,
+    blockedDragging: PropTypes.bool.isRequired
 };
 export default DragSource(ItemTypes.SHIP, shipSource, collect)(Ship);

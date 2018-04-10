@@ -3,4 +3,5 @@
     flex-direction: column;
     flex-wrap: nowrap;
     border: 2px solid black;
+    cursor: pointer;
 }

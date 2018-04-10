@@ -10,13 +10,16 @@ import {observe} from "./Game";
 class App extends Component {
 
     socket;
+    opponentBoard = [];
+    myBoard = [];
 
     constructor(props) {
         super(props);
-        this.state = {
-            myBoard: [],
-            opponentBoard: []
-        };
+        this.state = {};
+        // this.state = {
+        //     myBoard: [],
+        //     opponentBoard: []
+        // };
         this.unobserve = observe(this.handleChange.bind(this));
     }
 
@@ -24,7 +27,6 @@ class App extends Component {
         const nextState = this.state;
         nextState.shipsPosition = shipsPosition;
         if (this.state.shipsPosition) {
-            console.log(nextState);
             this.setState(nextState);
         } else {
             this.state.push({shipsPosition: nextState})
@@ -36,9 +38,6 @@ class App extends Component {
     }
 
     componentDidMount() {
-        this.putShip = this.putShip.bind(this);
-
-        this.socket = getSocket();
 
         let granimInstance = new Granim({
             element: '#granim-canvas',
@@ -53,56 +52,47 @@ class App extends Component {
                 }
             }
         });
-
-                this.socket.on('emptyBoard', (data) => {
-                    this.setState({
-                        myBoard: data.emptyPlayerBoard,
-                        opponentBoard: data.emptyOpponentBoard
-                    });
-                });
         /*
-                                this.socket.on('opponentBoard', (data) => {
-                                    const tmpBoard = this.state.opponentBoard;
-                                    tmpBoard[data.msg[0]][data.msg[1]] = data.msg[2];
-                                    this.setState({
-                                        opponentBoard: tmpBoard
-                                    });
-                                });
+                        this.socket.on('emptyBoard', (data) => {
+                            this.setState({
+                                myBoard: data.emptyPlayerBoard,
+                                opponentBoard: data.emptyOpponentBoard
+                            });
+                        });
 
-                                this.socket.on('putShip', (data) => {
-                                    console.log(data.msg);
-                                    this.setState({
-                                        myBoard: data.msg
-                                    });
-                                });
-                                this.socket.on('opponentDisconnected', () => {
-                                    console.log("disconnected opponent");
-                                    this.socket.disconnect();
-                                    alert('Opponent disconnected');
-                                });
-                        */
-    }
+                                        this.socket.on('opponentBoard', (data) => {
+                                            const tmpBoard = this.state.opponentBoard;
+                                            tmpBoard[data.msg[0]][data.msg[1]] = data.msg[2];
+                                            this.setState({
+                                                opponentBoard: tmpBoard
+                                            });
+                                        });
 
-    shot = (event) => {
-        sendShotCoord(event);
-    };
-
-    putShip(event) {
-        sendShipCoord(event);
+                                        this.socket.on('putShip', (data) => {
+                                            console.log(data.msg);
+                                            this.setState({
+                                                myBoard: data.msg
+                                            });
+                                        });
+                                        this.socket.on('opponentDisconnected', () => {
+                                            console.log("disconnected opponent");
+                                            this.socket.disconnect();
+                                            alert('Opponent disconnected');
+                                        });
+                                */
     }
 
     render() {
         const {shipsPosition} = this.state;
-        console.log(this.state);
         return (
             <div className="App">
                 <Row className="mainRow">
-                    <Col className='mainCol l6'>
-                        <OpponentBoard board={this.state.opponentBoard} shot={this.shot}/>
-                    </Col>
+                    {/*<Col className='mainCol l6'>*/}
+                        {/*<OpponentBoard board={this.state.opponentBoard} shot={this.shot}/>*/}
+                    {/*</Col>*/}
                     {/*<PlayerBoard shipPosition={shipPosition} />*/}
-                    <Col className='mainCol l6'>
-                        <PlayerBoard shipsPosition={shipsPosition} board={this.state.myBoard} putShip={this.putShip}/>
+                    <Col className='mainCol l12'>
+                        <PlayerBoard shipsPosition={shipsPosition}/>
                     </Col>
                 </Row>
 
