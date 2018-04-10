@@ -82,23 +82,6 @@ class PlayerBoard extends Component {
         </div>
             <Button onClick={this.startGame}> Start</Button>
         </div>
-        // const cells = [];
-        // for (let i = 0; i < 64; i++) {
-        //     cells.push(this.renderCell(i));
-        // }
-        // return (
-        //     <div style={{
-        //         // width: '100%',
-        //         // height: '100%',
-        //         display: 'flex',
-        //         flexWrap: 'wrap'
-        //     }}>
-        //         {cells}
-        //     </div>
-        // );
-
-
-
         // let tmpBoard = [];
         // let cells = [];
         // for (let i = 0; i < this.props.board.length; i++) {

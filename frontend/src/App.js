@@ -1,11 +1,10 @@
 import React, {Component} from 'react';
 import './App.css';
-import {sendShipCoord, getSocket, sendShotCoord} from './api';
 import Granim from 'granim';
 import {Col, Row} from 'react-materialize';
 import OpponentBoard from "./components/OpponentBoard/OpponentBoard";
 import PlayerBoard from "./components/PlayerBoard/PlayerBoard";
-import {observe} from "./Game";
+import {getSocket, observe} from "./Game";
 
 class App extends Component {
 
@@ -15,11 +14,9 @@ class App extends Component {
 
     constructor(props) {
         super(props);
-        this.state = {};
-        // this.state = {
-        //     myBoard: [],
-        //     opponentBoard: []
-        // };
+        this.state = {
+            cellStatus: []
+        };
         this.unobserve = observe(this.handleChange.bind(this));
     }
 
@@ -33,12 +30,10 @@ class App extends Component {
         }
     }
 
-    componentWillUnmount() {
-        this.unobserve()
-    }
+
 
     componentDidMount() {
-
+            this.socket = getSocket();
         let granimInstance = new Granim({
             element: '#granim-canvas',
             name: 'granim',
@@ -52,6 +47,20 @@ class App extends Component {
                 }
             }
         });
+        this.socket.on('shotStatus', (data) => {
+            // console.log(data);
+            this.setState(
+                {
+                    cellStatus: data.msg
+                }
+            );
+
+            // const tmpBoard = this.state.opponentBoard;
+            // tmpBoard[data.msg[0]][data.msg[1]] = data.msg[2];
+            // this.setState({
+            //     opponentBoard: tmpBoard
+            // });
+        });
         /*
                         this.socket.on('emptyBoard', (data) => {
                             this.setState({
@@ -60,13 +69,7 @@ class App extends Component {
                             });
                         });
 
-                                        this.socket.on('opponentBoard', (data) => {
-                                            const tmpBoard = this.state.opponentBoard;
-                                            tmpBoard[data.msg[0]][data.msg[1]] = data.msg[2];
-                                            this.setState({
-                                                opponentBoard: tmpBoard
-                                            });
-                                        });
+
 
                                         this.socket.on('putShip', (data) => {
                                             console.log(data.msg);
@@ -82,16 +85,18 @@ class App extends Component {
                                 */
     }
 
+    componentWillUnmount() {
+        this.unobserve()
+    }
     render() {
         const {shipsPosition} = this.state;
         return (
             <div className="App">
                 <Row className="mainRow">
-                    {/*<Col className='mainCol l6'>*/}
-                        {/*<OpponentBoard board={this.state.opponentBoard} shot={this.shot}/>*/}
-                    {/*</Col>*/}
-                    {/*<PlayerBoard shipPosition={shipPosition} />*/}
-                    <Col className='mainCol l12'>
+                    <Col className='mainCol l6'>
+                        <OpponentBoard cellStatus={this.state.cellStatus}/>
+                    </Col>
+                    <Col className='mainCol l6'>
                         <PlayerBoard shipsPosition={shipsPosition}/>
                     </Col>
                 </Row>

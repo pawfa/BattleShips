@@ -1,17 +1,29 @@
 import React, {Component} from "react";
-import {Col, Row} from 'react-materialize';
 import './OpponentBoard.css'
+import {sendShotCoord} from "../../Game";
 export default class OpponentBoard extends Component {
+        constructor(props){
+            super(props);
+        }
 
     renderCell(i) {
-        const x = i % 10;
-        const y = Math.floor(i / 10);
+        let shotClass = 'opponentBoardCell ';
+        let currentCell = this.props.cellStatus.findIndex((e)=>{
+            return e[1] === i;
+        });
+
+        if(currentCell >= 0){
+            console.log('wbija');
+            shotClass = this.props.cellStatus[currentCell][0] === 0 ? shotClass + 'miss': shotClass +' hit';
+        }
+
         return (
-            <div key={i} className='opponentBoardCell'>
-                    {i}
+            <div key={i} onClick={() =>{sendShotCoord(i)}} className={shotClass}>
+                <div className='opponentBoardCellInterior'>{i}</div>
             </div>
         )
     }
+
     render() {
         const cells = [];
         for (let i = 0; i < 100; i ++) {

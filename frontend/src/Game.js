@@ -9,13 +9,16 @@ let shipsPosition = {
 
 
 export function shipsAreReady(){
-    socket.emit('shipCoord',shipsPosition);
+    socket.emit('shipsAreReady',shipsPosition);
 }
 
 export function sendShotCoord(shotCoord){
+    // console.log(shotCoord);
     socket.emit('shotCoord',shotCoord);
+
 }
-function getSocket(){
+
+export function getSocket(){
     return socket;
 }
 

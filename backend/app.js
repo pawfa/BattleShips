@@ -21,22 +21,22 @@ io.on('connection', function (socket) {
 
     connectToRoom(socket);
 
-    socket.emit('emptyBoard', {
-        emptyPlayerBoard: getEmptyBoard(),
-        emptyOpponentBoard: getEmptyBoard()
-    });
+    // socket.emit('emptyBoard', {
+    //     emptyPlayerBoard: getEmptyBoard(),
+    //     emptyOpponentBoard: getEmptyBoard()
+    // });
 
     socket.on('shotCoord', function (data) {
-        socket.emit('opponentBoard', {
+        socket.emit('shotStatus', {
             msg: shot(data, socket.rooms)
         });
     });
 
-    socket.on('shipCoord', function (data) {
-        console.log(socket.rooms);
-        socket.emit('putShip', {
-            msg: putShip(data, socket.rooms)
-        });
+    socket.on('shipsAreReady', function (data) {
+        putShip(data, socket.rooms);
+        // socket.emit('putShip', {
+        //     msg:
+        // });
     });
     socket.on('disconnecting', function () {
         socket.to(Object.keys(socket.rooms)[0]).emit('opponentDisconnected');

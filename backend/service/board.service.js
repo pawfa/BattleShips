@@ -14,6 +14,8 @@ for (let i = 0; i < 10; i++) {
 let rooms = [];
 let roomNumber = 0;
 let numberOfClients = 0;
+let opponentShots = [];
+let playerShots = [];
 
 let createBoard = function () {
     let board = [];
@@ -29,31 +31,42 @@ let createBoard = function () {
 let shot = function (shotCoord, socketRoom) {
     let roomNumber = Number(Object.keys(socketRoom)[0]);
     let socketId = Object.keys(socketRoom)[1];
-    let x = Math.floor(shotCoord % 10);
-    let y = Math.floor(shotCoord / 10 % 10);
+    console.log(shotCoord);
+    const x = shotCoord % 10;
+    const y = Math.floor(shotCoord / 10);
+    // console.log(opponentBoard);
     let elementPos = rooms.map(function(x) {console.log(x.roomNumber);return x.roomNumber; }).indexOf(roomNumber);
     if(rooms[elementPos].playerId === socketId){
-        return rooms[elementPos].opponentBoard[y][x] !== 1 ? [y,x,2] : [y,x,3];
+        playerShots.push([rooms[elementPos].opponentBoard[y][x],shotCoord]);
+        console.log(playerShots);
+        return playerShots;
     }else{
-        return rooms[elementPos].playerBoard[y][x] !== 1 ? [y,x,2] : [y,x,3];
+        opponentShots.push([rooms[elementPos].playerBoard[y][x],shotCoord]);
+        console.log(opponentShots);
+        return opponentShots;
     }
 };
 
-let putShip = function(coord,socketRoom){
+let putShip = function(shipsCoord,socketRoom){
     let roomNumber = Number(Object.keys(socketRoom)[0]);
     let socketId = Object.keys(socketRoom)[1];
-    let x = Math.floor(coord % 10);
-    let y = Math.floor(coord / 10 % 10);
-
     let elementPos = rooms.map(function(x) {console.log(x.roomNumber);return x.roomNumber; }).indexOf(roomNumber);
-    if(rooms[elementPos].playerId === socketId){
-        rooms[elementPos].playerBoard[y][x] = 1;
-        return rooms[elementPos].playerBoard;
-    }else{
-        rooms[elementPos].opponentBoard[y][x] = 1;
-        return rooms[elementPos].opponentBoard;
-    }
 
+    if(rooms[elementPos].playerId === socketId){
+        putShipsOnBoard(shipsCoord,rooms[elementPos].playerBoard);
+    }else{
+        putShipsOnBoard(shipsCoord,rooms[elementPos].opponentBoard);
+    }
+};
+let putShipsOnBoard = function(shipsCoord,board){
+    for(let ship in shipsCoord){
+        if (shipsCoord.hasOwnProperty(ship)) {
+            let shipArray = Array.from(shipsCoord[ship]);
+            for(let i = 0; i < shipArray.length; i++){
+                board[shipArray[i][1]][shipArray[i][0]] = ship;
+            }
+        }
+    }
 };
 
 let createGame = function (data) {

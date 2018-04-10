@@ -33,7 +33,6 @@ class Ship extends Component {
         const { connectDragSource, isDragging } = this.props;
         const {shipLength} = this.props;
         const {shipPart} = this.props;
-        // shipSource.canDrag(this.props);
         return connectDragSource(<div style={{
             fontSize: 25,
             fontWeight: 'bold',
