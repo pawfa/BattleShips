@@ -100,6 +100,15 @@ class App extends Component {
                 }
             );
         });
+        this.socket.on('opponentDisconnected', () => {
+            console.log("Przeciwnik sie rozlaczyl");
+            this.setState(
+                {
+                    gameStatus: 'Opponent disconnected'
+                }
+            );
+            this.socket.close();
+        });
     }
 
     componentWillUnmount() {

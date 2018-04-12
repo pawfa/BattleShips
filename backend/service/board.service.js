@@ -15,8 +15,8 @@ for (let i = 0; i < 10; i++) {
 let rooms = [];
 let roomNumber = 0;
 let numberOfClients = 0;
-let opponentShots = [];
-let playerShots = [];
+// let opponentShots = [];
+// let playerShots = [];
 
 let createBoard = function () {
     let board = [];
@@ -37,11 +37,11 @@ let shot = function (shotCoord, socketRoom) {
     const y = Math.floor(shotCoord / 10);
 
     if(rooms[elementPos].playerId === socketId){
-        playerShots.push([rooms[elementPos].opponentBoard[y][x],shotCoord]);
-        return playerShots;
+        rooms[elementPos].playerShots.push([rooms[elementPos].opponentBoard[y][x],shotCoord]);
+        return rooms[elementPos].playerShots;
     }else{
-        opponentShots.push([rooms[elementPos].playerBoard[y][x],shotCoord]);
-        return opponentShots;
+        rooms[elementPos].opponentShots.push([rooms[elementPos].playerBoard[y][x],shotCoord]);
+        return rooms[elementPos].opponentShots;
     }
 };
 
@@ -88,21 +88,22 @@ let connectToRoom = function (socket) {
             roomNumber: roomNumber++,
             playerId: socket.id,
             opponentId: '',
-            turns:[]
+            turns:[],
+            playerShots: [],
+            opponentShots: []
         });
         createGame(rooms.length - 1);
     }
 
     numberOfClients++;
-    console.log("clients number "+numberOfClients);
-    console.log("rooms length " +rooms.length);
     let currentRoom = rooms[rooms.length - 1];
     if (currentRoom.playerId !== socket.id) {
         currentRoom.opponentId = socket.id;
         opponentOnline(rooms.length - 1);
     }
-    console.log(rooms);
     socket.join(currentRoom.roomNumber);
+    console.log("connectroom");
+    console.log(rooms);
 
 };
 
@@ -111,10 +112,11 @@ let endConnection = function(socketRoom){
         numberOfClients % 2 === 0 ? numberOfClients -=2 : numberOfClients--;
     }
 
-    console.log("clients number afetr dec"+numberOfClients);
     rooms = rooms.filter(( e ) => {
         return e.roomNumber !== Number(socketRoom);
     });
+    console.log("endconnection");
+    console.log(rooms);
 };
 
 module.exports = {

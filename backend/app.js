@@ -23,8 +23,7 @@ io.on('connection', function (socket) {
 
     socket.on('shotCoord', function (data) {
         let shotData = shot(data, socket.rooms);
-        console.log(socket.rooms);
-        socket.broadcast.to(socket.rooms[0]).emit('opponentShotStatus', {
+        socket.broadcast.to(Number(Object.keys(socket.rooms)[0])).emit('opponentShotStatus', {
             msg: shotData,
             gameStatus: 'Your turn'
         });
@@ -39,14 +38,14 @@ io.on('connection', function (socket) {
     socket.on('shipsAreReady', function (data) {
 
         if(putShip(data, socket.rooms).length === 1){
-            console.log("emiting waiting");
+            console.log("emiting waiting first if");
+            console.log(socket.rooms);
             socket.emit('waiting')
         }else{
-            console.log(socket.rooms[0]);
+            console.log("emiting waiting else");
             socket.emit('turnWaiting');
-            socket.broadcast.to(socket.rooms[0]).emit('turnActive')
-            // io.to().broadcast('startGame');
-            // socket.to(Object.keys(socket.rooms)).emit('startGame');
+            // console.log(Object.keys(socket.rooms)[0]);
+            socket.broadcast.to(Number(Object.keys(socket.rooms)[0])).emit('turnActive')
         }
 
     });
