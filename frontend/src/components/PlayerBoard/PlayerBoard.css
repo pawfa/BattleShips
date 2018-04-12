@@ -1,16 +1,22 @@
 
 .playerBoardCell{
-    border: 1px solid yellow;
+    border: 1px solid #01579b;
     width: 10%;
     height: 10%;
-
 }
 .playerBoard{
     width: 60%;
     height: 60%;
     display: flex;
     flex-wrap: wrap;
-    text-align: center;
+    border: 5px solid white;
+
+}
+.playerBoardWrapper{
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: center;
 }
 
 .hit{

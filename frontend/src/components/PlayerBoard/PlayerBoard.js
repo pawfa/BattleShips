@@ -17,13 +17,7 @@ class PlayerBoard extends Component {
         }
     }
 
-    startGame = () => {
-        this.setState({
-                blockedDragging: true
-            }
-        );
-        shipsAreReady();
-    };
+
 
     renderCell(i) {
         const x = i % 10;
@@ -49,7 +43,7 @@ class PlayerBoard extends Component {
     renderPiece(x, y) {
 
         const {shipsPosition} = this.props;
-        const {blockedDragging} = this.state;
+        const {blockedDragging} = this.props;
 
         const shipName = function(x,y){
             for (const key of Object.keys(shipsPosition)) {
@@ -81,19 +75,20 @@ class PlayerBoard extends Component {
     render() {
 
         const cells = [];
-        let disabledButton = this.state.blockedDragging ? 'disabled': '';
+
         for (let i = 0; i < 100; i ++) {
             cells.push(this.renderCell(i))
         }
-        return <div><div className={'playerBoard'}>
+        return <div className={'playerBoardWrapper'}><div className={'playerBoard'}>
             {cells}
         </div>
-            <Button className={disabledButton} onClick={this.startGame}> Start</Button>
+            {/*<Button className={disabledButton} onClick={this.startGame}> Start</Button>*/}
         </div>
     }
 }
 PlayerBoard.propTypes = {
     shipsPosition: PropTypes.object,
-    playerBoardCellStatus: PropTypes.array.isRequired
+    playerBoardCellStatus: PropTypes.array.isRequired,
+    blockedDragging: PropTypes.bool.isRequired
 };
 export default DragDropContext(HTML5Backend)(PlayerBoard);

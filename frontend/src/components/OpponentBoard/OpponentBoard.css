@@ -3,10 +3,11 @@
     height: 100%;
     display: flex;
     flex-wrap: wrap;
+    border: 5px solid white;
 }
 
 .opponentBoardCell{
-    border: 1px solid yellow;
+    border: 1px solid #01579b;
     width: 10%;
     height: 10%;
     cursor: pointer;

@@ -1,6 +1,14 @@
 body {
   margin: 0;
   padding: 0;
+  height: 100%;
   font-family: sans-serif;
+  /*background: linear-gradient(45deg, rgba(153,218,255,1) 0%, rgba(0,128,128,1) 100%); !* w3c *!*/
+  background: linear-gradient(45deg, #74ebd5, #acb6e5);
+  /*background: linear-gradient(45deg, #4cb8c4, #3cd3ad);*/
 }
+html{
+  height: 100%;
+}
+
 

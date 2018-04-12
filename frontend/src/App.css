@@ -38,11 +38,18 @@
   left: 0;
   z-index: -10;
 }
-
-/*.container{*/
-  /*margin: 0 auto;*/
-/*}*/
-/*.boardRow{*/
-  /*margin: 0 auto;*/
-  /*display: inline-block;*/
-/*}*/
+.mainCol{
+  float: right;
+  text-align: center;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.gameStatus{
+  padding: 10px 50px;
+  displaY: inline-block;
+  border: 3px solid white;
+  border-radius: 10px;
+  background-color: #039be5;
+  color: white;
+}

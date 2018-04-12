@@ -1,10 +1,9 @@
 import React, {Component} from 'react';
 import './App.css';
-import Granim from 'granim';
-import {Col, Row} from 'react-materialize';
+import {Button, Col, Row} from 'react-materialize';
 import OpponentBoard from "./components/OpponentBoard/OpponentBoard";
 import PlayerBoard from "./components/PlayerBoard/PlayerBoard";
-import {getSocket, observe} from "./Game";
+import {getSocket, observe, shipsAreReady} from "./Game";
 
 class App extends Component {
 
@@ -16,7 +15,8 @@ class App extends Component {
         this.state = {
             opponentBoardCellStatus: [],
             playerBoardCellStatus: [],
-            gameStatus: 'Set ships on the board'
+            gameStatus: 'Set ships on the board',
+            blockedDragging: false
         };
 
         this.unobserve = observe(this.handleChange.bind(this));
@@ -32,23 +32,17 @@ class App extends Component {
         }
     }
 
+    startGame = () => {
+        this.setState({
+                blockedDragging: true
+            }
+        );
+        shipsAreReady();
+    };
+
 
     componentDidMount() {
         this.socket = getSocket();
-        let granimInstance = new Granim({
-            element: '#granim-canvas',
-            name: 'granim',
-            opacity: [1, 1],
-            states: {
-                "default-state": {
-                    gradients: [
-                        ['#834D9B', '#D04ED6'],
-                        ['#1CD8D2', '#93EDC7']
-                    ]
-                }
-            }
-        });
-
         this.socket.on('shotStatus', (data) => {
             console.log(data.gameStatus);
             this.setState(
@@ -120,15 +114,22 @@ class App extends Component {
         const {gameStatus} = this.state;
         const {opponentBoardCellStatus} = this.state;
         const {playerBoardCellStatus} = this.state;
+        const {blockedDragging} = this.state;
+        let disabledButton = this.state.blockedDragging ? 'disabled light-blue darken-1': 'light-blue darken-1';
         return (
             <div className="App">
-                {this.state.gameStatus}
+                <Row>
+                    <h2>BattleShips</h2>
+                    <div className={'gameStatus'}>{this.state.gameStatus}</div>
+
+                </Row>
                 <Row className="mainRow">
-                    <Col className='mainCol l6'>
-                        <OpponentBoard gameStatus={gameStatus} opponentBoardCellStatus={opponentBoardCellStatus}/>
+                    <Col className='mainCol l5'>
+                        <OpponentBoard gameStatus={gameStatus}  opponentBoardCellStatus={opponentBoardCellStatus}/>
                     </Col>
-                    <Col className='mainCol l6'>
-                        <PlayerBoard shipsPosition={shipsPosition} playerBoardCellStatus={playerBoardCellStatus}/>
+                    <Col className='l2'><Button className={disabledButton} onClick={this.startGame}> Start</Button></Col>
+                    <Col className='mainCol l5'>
+                        <PlayerBoard shipsPosition={shipsPosition} blockedDragging={blockedDragging} playerBoardCellStatus={playerBoardCellStatus}/>
                     </Col>
                 </Row>
             </div>
