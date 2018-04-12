@@ -10,11 +10,6 @@ import { shipsAreReady } from '../../Game';
 
 
 class PlayerBoard extends Component {
-    blockedDragging = false;
-    static propTypes = {
-        shipsPosition: PropTypes.object
-    };
-
     constructor(props){
         super(props);
         this.state = {
@@ -33,8 +28,17 @@ class PlayerBoard extends Component {
     renderCell(i) {
         const x = i % 10;
         const y = Math.floor(i / 10);
+        let shotClass = 'playerBoardCell ';
+        let currentCell = this.props.playerBoardCellStatus.findIndex((e)=>{
+            return e[1] === i;
+        });
+
+        if(currentCell >= 0){
+            shotClass = this.props.playerBoardCellStatus[currentCell][0] === 0 ? shotClass + 'miss': shotClass +' hit';
+        }
+
         return (
-            <div key={i} className='playerBoardCell'>
+            <div key={i} className={shotClass}>
                 <Cell x={x} y={y} >
                     {this.renderPiece(x, y)}
                 </Cell>
@@ -45,6 +49,8 @@ class PlayerBoard extends Component {
     renderPiece(x, y) {
 
         const {shipsPosition} = this.props;
+        const {blockedDragging} = this.state;
+
         const shipName = function(x,y){
             for (const key of Object.keys(shipsPosition)) {
                 let index = shipsPosition[key].findIndex((e)=> e[0]===x && e[1] === y);
@@ -56,45 +62,38 @@ class PlayerBoard extends Component {
         };
 
         let shipData = shipName(x,y);
+        if (shipData.length === 0) return null;
         let shipType = shipData[0];
         let shipPart = shipData[1];
+
         switch (shipType) {
             case 'cruiser':
-                return <Ship shipLength={2} shipPart={shipPart} blockedDragging={this.state.blockedDragging}/>;
+                return <Ship shipLength={2} shipPart={shipPart} blockedDragging={blockedDragging}/>;
             case 'destroyer':
-                return <Ship shipLength={3} shipPart={shipPart} blockedDragging={this.state.blockedDragging}/>;
+                return <Ship shipLength={3} shipPart={shipPart} blockedDragging={blockedDragging}/>;
             case 'battleship':
-                return <Ship shipLength={4} shipPart={shipPart} blockedDragging={this.state.blockedDragging}/>;
+                return <Ship shipLength={4} shipPart={shipPart} blockedDragging={blockedDragging}/>;
             case 'aircraftCarrier':
-                return <Ship shipLength={5} shipPart={shipPart} blockedDragging={this.state.blockedDragging}/>;
+                return <Ship shipLength={5} shipPart={shipPart} blockedDragging={blockedDragging}/>;
         }
-        return null;
     }
 
     render() {
 
         const cells = [];
+        let disabledButton = this.state.blockedDragging ? 'disabled': '';
         for (let i = 0; i < 100; i ++) {
             cells.push(this.renderCell(i))
         }
         return <div><div className={'playerBoard'}>
             {cells}
         </div>
-            <Button onClick={this.startGame}> Start</Button>
+            <Button className={disabledButton} onClick={this.startGame}> Start</Button>
         </div>
-        // let tmpBoard = [];
-        // let cells = [];
-        // for (let i = 0; i < this.props.board.length; i++) {
-        //     for (let j = 0; j < this.props.board[i].length; j++) {
-        //         cells.push(<Cell cellClick={this.props.putShip.bind(this,this.props.board[i].length * i + j)}
-        //                          key={this.props.board[i].length * i + j} value={this.props.board[i][j]}/>);
-        //     }
-        //     tmpBoard.push(<div className='container' key={i}><Row className='boardRow' key={i}>{cells}</Row></div>);
-        //     cells = [];
-        //
-        // }
-        // return <div><Col className="l6 player">{tmpBoard}</Col><Ship value={3}/></div>;
     }
 }
-
+PlayerBoard.propTypes = {
+    shipsPosition: PropTypes.object,
+    playerBoardCellStatus: PropTypes.array.isRequired
+};
 export default DragDropContext(HTML5Backend)(PlayerBoard);

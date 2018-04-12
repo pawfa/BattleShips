@@ -33,12 +33,10 @@ class Ship extends Component {
         const { connectDragSource, isDragging } = this.props;
         const {shipLength} = this.props;
         const {shipPart} = this.props;
+        let shipClass = shipLength-1 === shipPart ? 'shipEnd' : shipPart === 0 ? 'shipBeginning' : 'ship';
         return connectDragSource(<div style={{
-            fontSize: 25,
-            fontWeight: 'bold',
             cursor: this.props.blockedDragging? 'pointer':'move'
-        }} >
-            ♘
+        }} className={shipClass}>
         </div>);
     }
 }

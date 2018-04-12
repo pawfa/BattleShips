@@ -3,12 +3,7 @@
     height: 50px;
     margin: 0 auto;
     border: 1px solid lightgray;
-    cursor: pointer;
-}
-.hit{
-    /*border: 1px solid red;*/
-    background-color: red;
-}
-.miss{
-    background-color: gray;
+    text-align: center;
+    display: table-cell;
+    vertical-align: middle;
 }

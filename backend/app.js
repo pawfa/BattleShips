@@ -21,28 +21,40 @@ io.on('connection', function (socket) {
 
     connectToRoom(socket);
 
-    // socket.emit('emptyBoard', {
-    //     emptyPlayerBoard: getEmptyBoard(),
-    //     emptyOpponentBoard: getEmptyBoard()
-    // });
-
     socket.on('shotCoord', function (data) {
-        socket.emit('shotStatus', {
-            msg: shot(data, socket.rooms)
+        let shotData = shot(data, socket.rooms);
+        console.log(socket.rooms);
+        socket.broadcast.to(socket.rooms[0]).emit('opponentShotStatus', {
+            msg: shotData,
+            gameStatus: 'Your turn'
         });
+
+        socket.emit('shotStatus', {
+            msg: shotData,
+            gameStatus: 'Waiting for opponent shot'
+        });
+        // socket.emit();
     });
 
     socket.on('shipsAreReady', function (data) {
-        putShip(data, socket.rooms);
-        // socket.emit('putShip', {
-        //     msg:
-        // });
+
+        if(putShip(data, socket.rooms).length === 1){
+            console.log("emiting waiting");
+            socket.emit('waiting')
+        }else{
+            console.log(socket.rooms[0]);
+            socket.emit('turnWaiting');
+            socket.broadcast.to(socket.rooms[0]).emit('turnActive')
+            // io.to().broadcast('startGame');
+            // socket.to(Object.keys(socket.rooms)).emit('startGame');
+        }
+
     });
+
     socket.on('disconnecting', function () {
         socket.to(Object.keys(socket.rooms)[0]).emit('opponentDisconnected');
         console.log("disconnecting");
         endConnection(Object.keys(socket.rooms)[0]);
-        // socket.disconnect(true);
     });
 });
 

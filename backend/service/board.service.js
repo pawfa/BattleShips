@@ -11,6 +11,7 @@ for (let i = 0; i < 10; i++) {
     }
 }
 
+
 let rooms = [];
 let roomNumber = 0;
 let numberOfClients = 0;
@@ -31,18 +32,15 @@ let createBoard = function () {
 let shot = function (shotCoord, socketRoom) {
     let roomNumber = Number(Object.keys(socketRoom)[0]);
     let socketId = Object.keys(socketRoom)[1];
-    console.log(shotCoord);
+    let elementPos = rooms.map(function(x) {return x.roomNumber; }).indexOf(roomNumber);
     const x = shotCoord % 10;
     const y = Math.floor(shotCoord / 10);
-    // console.log(opponentBoard);
-    let elementPos = rooms.map(function(x) {console.log(x.roomNumber);return x.roomNumber; }).indexOf(roomNumber);
+
     if(rooms[elementPos].playerId === socketId){
         playerShots.push([rooms[elementPos].opponentBoard[y][x],shotCoord]);
-        console.log(playerShots);
         return playerShots;
     }else{
         opponentShots.push([rooms[elementPos].playerBoard[y][x],shotCoord]);
-        console.log(opponentShots);
         return opponentShots;
     }
 };
@@ -53,11 +51,15 @@ let putShip = function(shipsCoord,socketRoom){
     let elementPos = rooms.map(function(x) {console.log(x.roomNumber);return x.roomNumber; }).indexOf(roomNumber);
 
     if(rooms[elementPos].playerId === socketId){
+        rooms[elementPos].turns.push('player');
         putShipsOnBoard(shipsCoord,rooms[elementPos].playerBoard);
     }else{
+        rooms[elementPos].turns.push('opponent');
         putShipsOnBoard(shipsCoord,rooms[elementPos].opponentBoard);
     }
+    return rooms[elementPos].turns;
 };
+
 let putShipsOnBoard = function(shipsCoord,board){
     for(let ship in shipsCoord){
         if (shipsCoord.hasOwnProperty(ship)) {
@@ -85,10 +87,12 @@ let connectToRoom = function (socket) {
         rooms.push({
             roomNumber: roomNumber++,
             playerId: socket.id,
-            opponentId: ''
+            opponentId: '',
+            turns:[]
         });
         createGame(rooms.length - 1);
     }
+
     numberOfClients++;
     console.log("clients number "+numberOfClients);
     console.log("rooms length " +rooms.length);
@@ -97,6 +101,7 @@ let connectToRoom = function (socket) {
         currentRoom.opponentId = socket.id;
         opponentOnline(rooms.length - 1);
     }
+    console.log(rooms);
     socket.join(currentRoom.roomNumber);
 
 };

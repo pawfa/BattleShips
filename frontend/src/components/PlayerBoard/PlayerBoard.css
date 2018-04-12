@@ -12,3 +12,10 @@
     flex-wrap: wrap;
     text-align: center;
 }
+
+.hit{
+    background-color: red;
+}
+.miss{
+    background-color: gray;
+}

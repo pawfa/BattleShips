@@ -10,13 +10,15 @@ class App extends Component {
 
     socket;
     opponentBoard = [];
-    myBoard = [];
 
     constructor(props) {
         super(props);
         this.state = {
-            cellStatus: []
+            opponentBoardCellStatus: [],
+            playerBoardCellStatus: [],
+            gameStatus: 'Set ships on the board'
         };
+
         this.unobserve = observe(this.handleChange.bind(this));
     }
 
@@ -31,9 +33,8 @@ class App extends Component {
     }
 
 
-
     componentDidMount() {
-            this.socket = getSocket();
+        this.socket = getSocket();
         let granimInstance = new Granim({
             element: '#granim-canvas',
             name: 'granim',
@@ -47,60 +48,80 @@ class App extends Component {
                 }
             }
         });
+
         this.socket.on('shotStatus', (data) => {
-            // console.log(data);
+            console.log(data.gameStatus);
             this.setState(
                 {
-                    cellStatus: data.msg
+                    opponentBoardCellStatus: data.msg,
+                    gameStatus: data.gameStatus
                 }
             );
 
-            // const tmpBoard = this.state.opponentBoard;
-            // tmpBoard[data.msg[0]][data.msg[1]] = data.msg[2];
-            // this.setState({
-            //     opponentBoard: tmpBoard
-            // });
         });
-        /*
-                        this.socket.on('emptyBoard', (data) => {
-                            this.setState({
-                                myBoard: data.emptyPlayerBoard,
-                                opponentBoard: data.emptyOpponentBoard
-                            });
-                        });
+
+        this.socket.on('opponentShotStatus', (data) => {
+            console.log(data);
+            this.setState(
+                {
+                    playerBoardCellStatus: data.msg,
+                    gameStatus: data.gameStatus
+                }
+            );
+
+        });
 
 
+        this.socket.on('waiting', () => {
+            console.log('waiting for opponent');
 
-                                        this.socket.on('putShip', (data) => {
-                                            console.log(data.msg);
-                                            this.setState({
-                                                myBoard: data.msg
-                                            });
-                                        });
-                                        this.socket.on('opponentDisconnected', () => {
-                                            console.log("disconnected opponent");
-                                            this.socket.disconnect();
-                                            alert('Opponent disconnected');
-                                        });
-                                */
+            this.setState(
+                {
+                    gameStatus: 'Waiting for opponent'
+                }
+            );
+        });
+
+        this.socket.on('turnWaiting', () => {
+            console.log('turnWaiting');
+
+            this.setState(
+                {
+                    gameStatus: 'Waiting for opponent shot'
+                }
+            );
+        });
+
+        this.socket.on('turnActive', () => {
+            console.log('turnActive');
+            this.setState(
+                {
+                    gameStatus: 'Your turn'
+                }
+            );
+        });
     }
 
     componentWillUnmount() {
         this.unobserve()
     }
+
     render() {
         const {shipsPosition} = this.state;
+        const {gameStatus} = this.state;
+        const {opponentBoardCellStatus} = this.state;
+        const {playerBoardCellStatus} = this.state;
         return (
             <div className="App">
+                {this.state.gameStatus}
                 <Row className="mainRow">
                     <Col className='mainCol l6'>
-                        <OpponentBoard cellStatus={this.state.cellStatus}/>
+                        <OpponentBoard gameStatus={gameStatus} opponentBoardCellStatus={opponentBoardCellStatus}/>
                     </Col>
                     <Col className='mainCol l6'>
-                        <PlayerBoard shipsPosition={shipsPosition}/>
+                        <PlayerBoard shipsPosition={shipsPosition} playerBoardCellStatus={playerBoardCellStatus}/>
                     </Col>
                 </Row>
-
             </div>
         );
     }
