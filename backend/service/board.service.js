@@ -126,9 +126,12 @@ let endConnection = function(socketRoom){
 
 let restart = function(socketRoom){
     console.log(socketRoom);
+    console.log(rooms);
     let roomNumber = Number(Object.keys(socketRoom)[0]);
-    if(rooms[roomNumber]['playAgain'] === 0){
-        rooms[roomNumber]['playAgain']++;
+    let elementPos = rooms.map(function(x) {return x.roomNumber; }).indexOf(roomNumber);
+
+    if(rooms[elementPos]['playAgain'] === 0){
+        rooms[elementPos]['playAgain']++;
     }else{
         let props = {
             turns:[],
@@ -137,7 +140,7 @@ let restart = function(socketRoom){
             playerHits: 0,
             opponentHits: 0
         };
-        for(let p in props) rooms[roomNumber][p] = props[p];
+        for(let p in props) rooms[elementPos][p] = props[p];
     }
 
 

@@ -14,7 +14,6 @@ export function shipsAreReady(){
 }
 
 export function sendShotCoord(shotCoord){
-    // console.log(shotCoord);
     socket.emit('shotCoord',shotCoord);
 
 }

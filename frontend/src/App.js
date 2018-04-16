@@ -41,6 +41,9 @@ class App extends Component {
             );
             shipsAreReady();
         } else {
+            if(!this.socket.connected){
+                this.socket.open();
+            }
             this.socket.emit('newGame');
             this.setState({
                     opponentBoardCellStatus: [],
@@ -96,7 +99,8 @@ class App extends Component {
             console.log("Przeciwnik sie rozlaczyl");
             this.setState(
                 {
-                    gameStatus: 'Opponent disconnected'
+                    gameStatus: 'Opponent disconnected',
+                    buttonStatus: 'Restart'
                 }
             );
             this.socket.close();

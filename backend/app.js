@@ -19,6 +19,10 @@ io.on('connection', function (socket) {
 
     connectToRoom(socket);
 
+    socket.on('newGame',()=>{
+        restart(socket.rooms);
+    });
+
     socket.on('shotCoord', function (data) {
         let shotData = shot(data, socket.rooms);
 
@@ -43,12 +47,9 @@ io.on('connection', function (socket) {
         }
 
     });
-    socket.on('newGame',()=>{
-       restart(socket.rooms);
-    });
 
     socket.on('shipsAreReady', function (data) {
-
+            console.log('shipsAreReady');
         if(putShip(data, socket.rooms).length === 1){
             socket.emit('turnStatus', {
                 msg: 'Waiting for opponent'

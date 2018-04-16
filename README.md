@@ -3,7 +3,7 @@ Battleship game for two players.
 
 ## Description
 
-Example application to learn React. You can see demo [here](http://battleships.pawfa.usermd.net/)(early phase, still working on basic functionalities). Every code review and criticism is welcome.
+Example application to learn React. You can see demo [here](http://battleships.pawfa.usermd.net/). Every code review and criticism is welcome.
 
 
 ## Getting Started
