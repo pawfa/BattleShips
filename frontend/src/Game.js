@@ -1,5 +1,6 @@
 import openSocket from 'socket.io-client';
-const socket = openSocket('http://localhost:3003');
+const socket = openSocket('http://back_battleships.pawfa.usermd.net:3003');
+// const socket = openSocket('http://localhost:3003');
 let shipsPosition = {
     cruiser: [[0,0],[1,0]],
     destroyer: [[3,4],[4,4],[5,4]],
@@ -41,18 +42,40 @@ export function observe(o) {
     }
 }
 
-// export function canMoveKnight(toX, toY) {
-//     const [x, y] = knightPosition;
-//     const dx = toX - x;
-//     const dy = toY - y;
-//
-//     return (
-//         (Math.abs(dx) === 2 && Math.abs(dy) === 1) ||
-//         (Math.abs(dx) === 1 && Math.abs(dy) === 2)
-//     )
-// }
+export function canDropShip(toX, toY, shipLength, shipPart) {
+    const endShip = toX+ shipLength - shipPart;
+    const begShip = toX - shipPart;
+    console.log();
+    if(endShip > 10 || begShip < 0){
+        return false;
+    }else{
+            for (const key of Object.keys(shipsPosition)) {
+                let begShipExisting = shipsPosition[key][0][0];
+                let endShipExisting = shipsPosition[key][0][0]+shipsPosition[key].length-1;
+                if(shipsPosition[key].length !== shipLength && toY === shipsPosition[key][0][1] && ((begShip <= endShipExisting && begShip >= begShipExisting-(shipLength-1)))){
+                    return false;
+                }
+            }
+    }
+
+    return (
+        true
+    )
+}
 
 export function moveShip(arr, shipLength, shipPart) {
+    let shipType = translateLength(shipLength);
+
+    shipsPosition[shipType][shipPart] = arr;
+    shipsPosition[shipType].forEach(
+        (e,index) =>{
+            e[0] = index-shipPart+arr[0];
+            e[1] = arr[1];
+        }
+    );
+    emitChange()
+}
+function translateLength(shipLength){
     let shipType = '';
     switch (shipLength) {
         case 2:
@@ -68,13 +91,5 @@ export function moveShip(arr, shipLength, shipPart) {
             shipType = 'aircraftCarrier';
             break;
     }
-
-    shipsPosition[shipType][shipPart] = arr;
-    shipsPosition[shipType].forEach(
-        (e,index) =>{
-            e[0] = index-shipPart+arr[0];
-            e[1] = arr[1];
-        }
-    );
-    emitChange()
+    return shipType;
 }

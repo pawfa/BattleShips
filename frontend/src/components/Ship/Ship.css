@@ -1,6 +1,5 @@
 .ship{
-    /*margin: 0 auto;*/
-    width: 100%;
+    width: 102%;
     height: 30px;
     border: none;
     border-top: 2px solid rgba(0, 0, 0, 0.4);
@@ -8,8 +7,7 @@
     display: inline-block;
 }
 .shipBeginning{
-    /*margin: 0 auto;*/
-    width: 100%;
+    width: 102%;
     height: 30px;
     border: 2px solid rgba(0, 0, 0, 0.4);
     border-bottom-left-radius: 15px;
@@ -18,8 +16,7 @@
     display: inline-block;
 }
 .shipEnd{
-    /*margin: 0 auto;*/
-    width: 100%;
+    width: 102%;
     height: 30px;
     border: 2px solid rgba(0, 0, 0, 0.4);
     border-bottom-right-radius: 15px;

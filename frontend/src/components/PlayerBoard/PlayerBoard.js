@@ -7,6 +7,7 @@ import PropTypes from 'prop-types';
 import './PlayerBoard.css';
 import {Button} from "react-materialize";
 import { shipsAreReady } from '../../Game';
+import ItemsDragLayer from "../../dnd/ItemsDragLayer";
 
 
 class PlayerBoard extends Component {
@@ -79,7 +80,7 @@ class PlayerBoard extends Component {
         for (let i = 0; i < 100; i ++) {
             cells.push(this.renderCell(i))
         }
-        return <div className={'playerBoardWrapper'}><div className={'playerBoard'}>
+        return <div className={'playerBoardWrapper'}><div className={'playerBoard'}><ItemsDragLayer />
             {cells}
         </div>
             {/*<Button className={disabledButton} onClick={this.startGame}> Start</Button>*/}

@@ -16,7 +16,8 @@ class App extends Component {
             opponentBoardCellStatus: [],
             playerBoardCellStatus: [],
             gameStatus: 'Set ships on the board',
-            blockedDragging: false
+            blockedDragging: false,
+            buttonStatus: 'Start'
         };
 
         this.unobserve = observe(this.handleChange.bind(this));
@@ -33,18 +34,28 @@ class App extends Component {
     }
 
     startGame = () => {
-        this.setState({
-                blockedDragging: true
-            }
-        );
-        shipsAreReady();
+        if (this.state.buttonStatus === 'Start') {
+            this.setState({
+                    blockedDragging: true
+                }
+            );
+            shipsAreReady();
+        } else {
+            this.socket.emit('newGame');
+            this.setState({
+                    opponentBoardCellStatus: [],
+                    playerBoardCellStatus: [],
+                    buttonStatus: 'Start',
+                    gameStatus: 'Set ships on the board'
+                }
+            );
+        }
     };
 
 
     componentDidMount() {
         this.socket = getSocket();
         this.socket.on('shotStatus', (data) => {
-            console.log(data.gameStatus);
             this.setState(
                 {
                     opponentBoardCellStatus: data.msg,
@@ -55,7 +66,6 @@ class App extends Component {
         });
 
         this.socket.on('opponentShotStatus', (data) => {
-            console.log(data);
             this.setState(
                 {
                     playerBoardCellStatus: data.msg,
@@ -65,35 +75,23 @@ class App extends Component {
 
         });
 
-
-        this.socket.on('waiting', () => {
-            console.log('waiting for opponent');
+        this.socket.on('turnStatus', (data) => {
+            if (data.msg === 'You won' || data.msg === 'You lost') {
+                this.setState(
+                    {
+                        blockedDragging: false,
+                        buttonStatus: 'Play again?'
+                    }
+                );
+            }
 
             this.setState(
                 {
-                    gameStatus: 'Waiting for opponent'
+                    gameStatus: data.msg
                 }
             );
         });
 
-        this.socket.on('turnWaiting', () => {
-            console.log('turnWaiting');
-
-            this.setState(
-                {
-                    gameStatus: 'Waiting for opponent shot'
-                }
-            );
-        });
-
-        this.socket.on('turnActive', () => {
-            console.log('turnActive');
-            this.setState(
-                {
-                    gameStatus: 'Your turn'
-                }
-            );
-        });
         this.socket.on('opponentDisconnected', () => {
             console.log("Przeciwnik sie rozlaczyl");
             this.setState(
@@ -115,21 +113,25 @@ class App extends Component {
         const {opponentBoardCellStatus} = this.state;
         const {playerBoardCellStatus} = this.state;
         const {blockedDragging} = this.state;
-        let disabledButton = this.state.blockedDragging ? 'disabled light-blue darken-1': 'light-blue darken-1';
+        const {buttonStatus} = this.state;
+        let disabledButton = this.state.blockedDragging ? 'disabled light-blue darken-1' : 'light-blue darken-1';
         return (
             <div className="App">
                 <Row>
                     <h2>BattleShips</h2>
-                    <div className={'gameStatus'}>{this.state.gameStatus}</div>
+                    <div className={'gameStatus valign-wrapper'}><h6
+                        className={'center-block'}>{this.state.gameStatus}</h6></div>
 
                 </Row>
                 <Row className="mainRow">
                     <Col className='mainCol l5'>
-                        <OpponentBoard gameStatus={gameStatus}  opponentBoardCellStatus={opponentBoardCellStatus}/>
+                        <OpponentBoard gameStatus={gameStatus} opponentBoardCellStatus={opponentBoardCellStatus}/>
                     </Col>
-                    <Col className='l2'><Button className={disabledButton} onClick={this.startGame}> Start</Button></Col>
+                    <Col className='l2'><Button className={disabledButton}
+                                                onClick={this.startGame}> {buttonStatus}</Button></Col>
                     <Col className='mainCol l5'>
-                        <PlayerBoard shipsPosition={shipsPosition} blockedDragging={blockedDragging} playerBoardCellStatus={playerBoardCellStatus}/>
+                        <PlayerBoard shipsPosition={shipsPosition} blockedDragging={blockedDragging}
+                                     playerBoardCellStatus={playerBoardCellStatus}/>
                     </Col>
                 </Row>
             </div>

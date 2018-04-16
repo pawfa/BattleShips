@@ -3,12 +3,16 @@ import './Cell.css';
 import PropTypes from 'prop-types';
 import {ItemTypes} from "../../Constants";
 import { DropTarget } from 'react-dnd';
-import { moveShip } from '../../Game';
+import {canDropShip, moveShip} from '../../Game';
 
 const cellTarget = {
     drop(props, monitor) {
         const item = monitor.getItem();
         moveShip([props.x, props.y],item.shipLength, item.shipPart);
+    },
+    canDrop(props,monitor) {
+        const item = monitor.getItem();
+        return canDropShip(props.x, props.y, item.shipLength, item.shipPart);
     }
 };
 
@@ -21,7 +25,7 @@ function collect(connect, monitor) {
 
 class Cell extends Component {
     render() {
-        const { x, y, connectDropTarget, isOver } = this.props;
+        const { connectDropTarget } = this.props;
         return connectDropTarget(<div className='cell'>
             {this.props.children}
             </div>);

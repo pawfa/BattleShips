@@ -3,6 +3,7 @@ import './Ship.css';
 import { ItemTypes } from '../../Constants';
 import { DragSource } from 'react-dnd';
 import PropTypes from 'prop-types';
+import {getEmptyImage} from "react-dnd-html5-backend";
 
 
 const shipSource = {
@@ -13,7 +14,6 @@ const shipSource = {
     },
 
     canDrag(props) {
-        // You can disallow drag based on props
         return !props.blockedDragging;
     }
 };
@@ -21,6 +21,7 @@ const shipSource = {
 function collect(connect, monitor) {
     return {
         connectDragSource: connect.dragSource(),
+        connectDragPreview: connect.dragPreview(),
         isDragging: monitor.isDragging()
     }
 }
@@ -28,6 +29,15 @@ function collect(connect, monitor) {
 
 
 class Ship extends Component {
+
+    componentDidMount() {
+
+        this.props.connectDragPreview(getEmptyImage(), {
+            // IE fallback: specify that we'd rather screenshot the node
+            // when it already knows it's being dragged so we can hide it with CSS.
+            captureDraggingState: true,
+        });
+    }
 
     render() {
         const { connectDragSource, isDragging } = this.props;
@@ -42,6 +52,7 @@ class Ship extends Component {
 }
 Ship.propTypes = {
     connectDragSource: PropTypes.func.isRequired,
+    connectDragPreview: PropTypes.func.isRequired,
     isDragging: PropTypes.bool.isRequired,
     shipLength: PropTypes.number.isRequired,
     shipPart: PropTypes.number.isRequired,

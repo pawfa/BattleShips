@@ -3,13 +3,11 @@ let express = require('express');
 let path = require('path');
 let cookieParser = require('cookie-parser');
 let logger = require('morgan');
-let getEmptyBoard = require('./service/board.service').createBoard;
 let shot = require('./service/board.service').shot;
 let putShip = require('./service/board.service').putShip;
 let endConnection = require('./service/board.service').endConnection;
+let restart = require('./service/board.service').restart;
 
-// let indexRouter = require('./routes/index');
-// let usersRouter = require('./routes/users');
 let connectToRoom = require('./service/board.service').connectToRoom;
 
 let app = express();
@@ -23,29 +21,45 @@ io.on('connection', function (socket) {
 
     socket.on('shotCoord', function (data) {
         let shotData = shot(data, socket.rooms);
+
         socket.broadcast.to(Number(Object.keys(socket.rooms)[0])).emit('opponentShotStatus', {
-            msg: shotData,
+            msg: shotData[0],
             gameStatus: 'Your turn'
         });
-
         socket.emit('shotStatus', {
-            msg: shotData,
+            msg: shotData[0],
             gameStatus: 'Waiting for opponent shot'
         });
-        // socket.emit();
+
+        if(shotData[1] === 14){
+            socket.emit('turnStatus',{
+                msg: 'You won'
+            });
+
+            socket.broadcast.to(Number(Object.keys(socket.rooms)[0])).emit('turnStatus', {
+                msg: 'You lost'
+            });
+
+        }
+
+    });
+    socket.on('newGame',()=>{
+       restart(socket.rooms);
     });
 
     socket.on('shipsAreReady', function (data) {
 
         if(putShip(data, socket.rooms).length === 1){
-            console.log("emiting waiting first if");
-            console.log(socket.rooms);
-            socket.emit('waiting')
+            socket.emit('turnStatus', {
+                msg: 'Waiting for opponent'
+            })
         }else{
-            console.log("emiting waiting else");
-            socket.emit('turnWaiting');
-            // console.log(Object.keys(socket.rooms)[0]);
-            socket.broadcast.to(Number(Object.keys(socket.rooms)[0])).emit('turnActive')
+            socket.emit('turnStatus',{
+                msg: 'Waiting for opponent shot'
+            });
+            socket.broadcast.to(Number(Object.keys(socket.rooms)[0])).emit('turnStatus', {
+                msg: 'Your turn'
+            })
         }
 
     });
@@ -67,9 +81,6 @@ app.use(express.json());
 app.use(express.urlencoded({extended: false}));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
-
-// app.use('/', indexRouter);
-// app.use('/users', usersRouter);
 
 // catch 404 and forward to error handler
 app.use(function (req, res, next) {

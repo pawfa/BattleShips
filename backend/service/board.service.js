@@ -11,12 +11,9 @@ for (let i = 0; i < 10; i++) {
     }
 }
 
-
 let rooms = [];
 let roomNumber = 0;
 let numberOfClients = 0;
-// let opponentShots = [];
-// let playerShots = [];
 
 let createBoard = function () {
     let board = [];
@@ -36,19 +33,27 @@ let shot = function (shotCoord, socketRoom) {
     const x = shotCoord % 10;
     const y = Math.floor(shotCoord / 10);
 
-    if(rooms[elementPos].playerId === socketId){
-        rooms[elementPos].playerShots.push([rooms[elementPos].opponentBoard[y][x],shotCoord]);
-        return rooms[elementPos].playerShots;
+
+    let room = rooms[elementPos];
+    if(room.playerId === socketId){
+        if(room.opponentBoard[y][x] !== 0){
+                room.playerHits++;
+        }
+        room.playerShots.push([room.opponentBoard[y][x],shotCoord]);
+        return [room.playerShots, room.playerHits];
     }else{
-        rooms[elementPos].opponentShots.push([rooms[elementPos].playerBoard[y][x],shotCoord]);
-        return rooms[elementPos].opponentShots;
+        if(room.playerBoard[y][x] !== 0){
+            room.opponentHits++;
+        }
+        room.opponentShots.push([room.playerBoard[y][x],shotCoord]);
+        return [room.opponentShots,room.opponentHits];
     }
 };
 
 let putShip = function(shipsCoord,socketRoom){
     let roomNumber = Number(Object.keys(socketRoom)[0]);
     let socketId = Object.keys(socketRoom)[1];
-    let elementPos = rooms.map(function(x) {console.log(x.roomNumber);return x.roomNumber; }).indexOf(roomNumber);
+    let elementPos = rooms.map(function(x) {return x.roomNumber; }).indexOf(roomNumber);
 
     if(rooms[elementPos].playerId === socketId){
         rooms[elementPos].turns.push('player');
@@ -71,8 +76,8 @@ let putShipsOnBoard = function(shipsCoord,board){
     }
 };
 
-let createGame = function (data) {
-    rooms[data].playerBoard = createBoard();
+let createGame = function (roomNumber) {
+    rooms[roomNumber].playerBoard = createBoard();
     console.log('created game');
 };
 
@@ -90,7 +95,10 @@ let connectToRoom = function (socket) {
             opponentId: '',
             turns:[],
             playerShots: [],
-            opponentShots: []
+            opponentShots: [],
+            playerHits: 0,
+            opponentHits: 0,
+            playAgain: 0
         });
         createGame(rooms.length - 1);
     }
@@ -102,8 +110,6 @@ let connectToRoom = function (socket) {
         opponentOnline(rooms.length - 1);
     }
     socket.join(currentRoom.roomNumber);
-    console.log("connectroom");
-    console.log(rooms);
 
 };
 
@@ -116,13 +122,31 @@ let endConnection = function(socketRoom){
         return e.roomNumber !== Number(socketRoom);
     });
     console.log("endconnection");
-    console.log(rooms);
+};
+
+let restart = function(socketRoom){
+    console.log(socketRoom);
+    let roomNumber = Number(Object.keys(socketRoom)[0]);
+    if(rooms[roomNumber]['playAgain'] === 0){
+        rooms[roomNumber]['playAgain']++;
+    }else{
+        let props = {
+            turns:[],
+            playerShots: [],
+            opponentShots: [],
+            playerHits: 0,
+            opponentHits: 0
+        };
+        for(let p in props) rooms[roomNumber][p] = props[p];
+    }
+
+
 };
 
 module.exports = {
-    createBoard,
     connectToRoom,
     shot,
     putShip,
-    endConnection
+    endConnection,
+    restart
 };

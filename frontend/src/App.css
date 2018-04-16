@@ -46,8 +46,9 @@
   justify-content: center;
 }
 .gameStatus{
-  padding: 10px 50px;
-  displaY: inline-block;
+  width:20%;
+  height: 50px;
+  margin: 0 auto;
   border: 3px solid white;
   border-radius: 10px;
   background-color: #039be5;
