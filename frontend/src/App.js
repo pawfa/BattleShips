@@ -119,6 +119,7 @@ class App extends Component {
         const {blockedDragging} = this.state;
         const {buttonStatus} = this.state;
         let disabledButton = this.state.blockedDragging ? 'disabled light-blue darken-1' : 'light-blue darken-1';
+
         return (
             <div className="App">
                 <Row>

@@ -11,7 +11,6 @@ export default class OpponentBoard extends Component {
         aircraftCarrier: 5,
     };
 
-
     constructor(props) {
         super(props);
     }
@@ -31,7 +30,6 @@ export default class OpponentBoard extends Component {
                 shotClass = shotClass+'hit';
                 this.hits[opponentBoardCellStatus[currentCell][0]]--;
             }
-            console.log(this.hits);
         }
 
         return (

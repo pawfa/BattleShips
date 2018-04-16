@@ -29,7 +29,7 @@ let createBoard = function () {
 let shot = function (shotCoord, socketRoom) {
     let roomNumber = Number(Object.keys(socketRoom)[0]);
     let socketId = Object.keys(socketRoom)[1];
-    let elementPos = rooms.map(function(x) {return x.roomNumber; }).indexOf(roomNumber);
+    let elementPos = rooms.map(() =>  x.roomNumber).indexOf(roomNumber);
     const x = shotCoord % 10;
     const y = Math.floor(shotCoord / 10);
 
@@ -53,16 +53,17 @@ let shot = function (shotCoord, socketRoom) {
 let putShip = function(shipsCoord,socketRoom){
     let roomNumber = Number(Object.keys(socketRoom)[0]);
     let socketId = Object.keys(socketRoom)[1];
-    let elementPos = rooms.map(function(x) {return x.roomNumber; }).indexOf(roomNumber);
+    let elementPos = rooms.map(() =>  x.roomNumber).indexOf(roomNumber);
+    let currentRoom = rooms[elementPos];
 
-    if(rooms[elementPos].playerId === socketId){
-        rooms[elementPos].turns.push('player');
-        putShipsOnBoard(shipsCoord,rooms[elementPos].playerBoard);
+    if(currentRoom.playerId === socketId){
+        currentRoom.turns.push('player');
+        putShipsOnBoard(shipsCoord,currentRoom.playerBoard);
     }else{
-        rooms[elementPos].turns.push('opponent');
-        putShipsOnBoard(shipsCoord,rooms[elementPos].opponentBoard);
+        currentRoom.turns.push('opponent');
+        putShipsOnBoard(shipsCoord,currentRoom.opponentBoard);
     }
-    return rooms[elementPos].turns;
+    return currentRoom.turns;
 };
 
 let putShipsOnBoard = function(shipsCoord,board){
@@ -118,20 +119,19 @@ let endConnection = function(socketRoom){
         numberOfClients % 2 === 0 ? numberOfClients -=2 : numberOfClients--;
     }
 
-    rooms = rooms.filter(( e ) => {
-        return e.roomNumber !== Number(socketRoom);
-    });
+    rooms = rooms.filter(( e ) =>
+        e.roomNumber !== Number(socketRoom)
+    );
     console.log("endconnection");
 };
 
 let restart = function(socketRoom){
-    console.log(socketRoom);
-    console.log(rooms);
     let roomNumber = Number(Object.keys(socketRoom)[0]);
-    let elementPos = rooms.map(function(x) {return x.roomNumber; }).indexOf(roomNumber);
+    let elementPos = rooms.map(() =>  x.roomNumber).indexOf(roomNumber);
+    let currentRoom = rooms[elementPos];
 
-    if(rooms[elementPos]['playAgain'] === 0){
-        rooms[elementPos]['playAgain']++;
+    if(currentRoom['playAgain'] === 0){
+        currentRoom['playAgain']++;
     }else{
         let props = {
             turns:[],
@@ -140,9 +140,8 @@ let restart = function(socketRoom){
             playerHits: 0,
             opponentHits: 0
         };
-        for(let p in props) rooms[elementPos][p] = props[p];
+        for(let p in props) currentRoom[p] = props[p];
     }
-
 
 };
 

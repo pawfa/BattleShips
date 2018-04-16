@@ -1,24 +1,25 @@
 import openSocket from 'socket.io-client';
+
 const socket = openSocket('http://back_battleships.pawfa.usermd.net:3003');
 // const socket = openSocket('http://localhost:3003');
 let shipsPosition = {
-    cruiser: [[0,0],[1,0]],
-    destroyer: [[3,4],[4,4],[5,4]],
-    battleship: [[3,0],[4,0],[5,0],[6,0]],
-    aircraftCarrier: [[5,3],[6,3],[7,3],[8,3],[9,3]]
+    cruiser: [[0, 0], [1, 0]],
+    destroyer: [[3, 4], [4, 4], [5, 4]],
+    battleship: [[3, 0], [4, 0], [5, 0], [6, 0]],
+    aircraftCarrier: [[5, 3], [6, 3], [7, 3], [8, 3], [9, 3]]
 };
 
 
-export function shipsAreReady(){
-    socket.emit('shipsAreReady',shipsPosition);
+export function shipsAreReady() {
+    socket.emit('shipsAreReady', shipsPosition);
 }
 
-export function sendShotCoord(shotCoord){
-    socket.emit('shotCoord',shotCoord);
+export function sendShotCoord(shotCoord) {
+    socket.emit('shotCoord', shotCoord);
 
 }
 
-export function getSocket(){
+export function getSocket() {
     return socket;
 }
 
@@ -42,19 +43,18 @@ export function observe(o) {
 }
 
 export function canDropShip(toX, toY, shipLength, shipPart) {
-    const endShip = toX+ shipLength - shipPart;
+    const endShip = toX + shipLength - shipPart;
     const begShip = toX - shipPart;
-    console.log();
-    if(endShip > 10 || begShip < 0){
+    if (endShip > 10 || begShip < 0) {
         return false;
-    }else{
-            for (const key of Object.keys(shipsPosition)) {
-                let begShipExisting = shipsPosition[key][0][0];
-                let endShipExisting = shipsPosition[key][0][0]+shipsPosition[key].length-1;
-                if(shipsPosition[key].length !== shipLength && toY === shipsPosition[key][0][1] && ((begShip <= endShipExisting && begShip >= begShipExisting-(shipLength-1)))){
-                    return false;
-                }
+    } else {
+        for (const key of Object.keys(shipsPosition)) {
+            let begShipExisting = shipsPosition[key][0][0];
+            let endShipExisting = shipsPosition[key][0][0] + shipsPosition[key].length - 1;
+            if (shipsPosition[key].length !== shipLength && toY === shipsPosition[key][0][1] && ((begShip <= endShipExisting && begShip >= begShipExisting - (shipLength - 1)))) {
+                return false;
             }
+        }
     }
 
     return (
@@ -67,14 +67,15 @@ export function moveShip(arr, shipLength, shipPart) {
 
     shipsPosition[shipType][shipPart] = arr;
     shipsPosition[shipType].forEach(
-        (e,index) =>{
-            e[0] = index-shipPart+arr[0];
+        (e, index) => {
+            e[0] = index - shipPart + arr[0];
             e[1] = arr[1];
         }
     );
     emitChange()
 }
-function translateLength(shipLength){
+
+function translateLength(shipLength) {
     let shipType = '';
     switch (shipLength) {
         case 2:
