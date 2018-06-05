@@ -8,9 +8,7 @@ import {getEmptyImage} from "react-dnd-html5-backend";
 
 const shipSource = {
     beginDrag(props) {
-        const { shipLength } = props;
-        const { shipPart } = props;
-        return {shipLength, shipPart};
+        return {...props};
     },
 
     canDrag(props) {
@@ -19,30 +17,24 @@ const shipSource = {
 };
 
 function collect(connect, monitor) {
-    return {
-        connectDragSource: connect.dragSource(),
-        connectDragPreview: connect.dragPreview(),
-        isDragging: monitor.isDragging()
-    }
+  return {
+    connectDragSource: connect.dragSource(),
+    connectDragPreview: connect.dragPreview(),
+    isDragging: monitor.isDragging()
+  }
 }
-
-
 
 class Ship extends Component {
 
     componentDidMount() {
 
         this.props.connectDragPreview(getEmptyImage(), {
-            // IE fallback: specify that we'd rather screenshot the node
-            // when it already knows it's being dragged so we can hide it with CSS.
             captureDraggingState: true,
         });
     }
 
     render() {
-        const { connectDragSource, isDragging } = this.props;
-        const {shipLength} = this.props;
-        const {shipPart} = this.props;
+        const {connectDragSource,shipLength, shipPart} = this.props;
         let shipClass = shipLength-1 === shipPart ? 'shipEnd' : shipPart === 0 ? 'shipBeginning' : 'ship';
         return connectDragSource(<div style={{
             cursor: this.props.blockedDragging? 'pointer':'move'

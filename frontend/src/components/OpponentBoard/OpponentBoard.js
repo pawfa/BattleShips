@@ -4,16 +4,12 @@ import {sendShotCoord} from "../../Game";
 import PropTypes from "prop-types";
 
 export default class OpponentBoard extends Component {
-    hits = {
+    private hits = {
         cruiser: 2,
         destroyer: 3,
         battleship: 4,
         aircraftCarrier: 5,
     };
-
-    constructor(props) {
-        super(props);
-    }
 
     renderCell(i) {
         let shotClass = 'opponentBoardCell ';
